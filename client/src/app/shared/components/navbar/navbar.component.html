@@ -2,19 +2,14 @@
   <!-- Brand -->
   <a class="brand" routerLink="/feed">
     <mat-icon class="brand-icon">hub</mat-icon>
-    <span class="brand-name">Andromeda</span>
+    <span class="brand-name">Milky Way</span>
   </a>
 
   <!-- Search -->
   <div class="search-box">
     <mat-icon class="search-icon">search</mat-icon>
-    <input
-      type="text"
-      placeholder="Search Andromeda..."
-      [(ngModel)]="searchQuery"
-      (keyup.enter)="search()"
-      class="search-input"
-    />
+    <input type="text" placeholder="Search Milky Way..." [(ngModel)]="searchQuery" (keyup.enter)="search()"
+      class="search-input" />
   </div>
 
   <!-- Mobile Hamburger -->
@@ -24,15 +19,8 @@
 
   <!-- Nav Icons -->
   <nav class="nav-links" [class.mobile-open]="mobileMenuOpen">
-    <a
-      *ngFor="let item of navItems"
-      [routerLink]="item.route"
-      routerLinkActive="active"
-      class="nav-item"
-      [matTooltip]="item.label"
-      matTooltipPosition="below"
-      (click)="mobileMenuOpen = false"
-    >
+    <a *ngFor="let item of navItems" [routerLink]="item.route" routerLinkActive="active" class="nav-item"
+      [matTooltip]="item.label" matTooltipPosition="below" (click)="mobileMenuOpen = false">
       <mat-icon>{{ item.icon }}</mat-icon>
       <span class="nav-label">{{ item.label }}</span>
     </a>
@@ -47,20 +35,14 @@
 
     <!-- Notifications -->
     <a routerLink="/notifications" class="action-btn" matTooltip="Notifications" matTooltipPosition="below">
-      <mat-icon
-        [matBadge]="unreadNotifications || null"
-        matBadgeColor="warn"
-        matBadgeSize="small"
-      >notifications</mat-icon>
+      <mat-icon [matBadge]="unreadNotifications || null" matBadgeColor="warn"
+        matBadgeSize="small">notifications</mat-icon>
     </a>
 
     <!-- Profile Menu -->
     <button class="avatar-btn" [matMenuTriggerFor]="profileMenu">
-      <img
-        [src]="currentUser?.avatar_url || 'assets/default-avatar.png'"
-        [alt]="currentUser?.username"
-        class="avatar sm"
-      />
+      <img [src]="currentUser?.avatar_url || 'assets/default-avatar.png'" [alt]="currentUser?.username"
+        class="avatar sm" />
     </button>
 
     <mat-menu #profileMenu="matMenu">

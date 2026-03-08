@@ -3,7 +3,7 @@
     <div class="auth-bg-particles"></div>
     <div class="brand-hero">
       <mat-icon class="hero-icon">hub</mat-icon>
-      <h1>Andromeda</h1>
+      <h1>Milky Way</h1>
       <p class="hero-tagline">Connect with friends and the world around you.</p>
 
       <div class="feature-highlights">
@@ -46,12 +46,8 @@
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Password</mat-label>
-          <input
-            matInput
-            formControlName="password"
-            [type]="hidePassword ? 'password' : 'text'"
-            autocomplete="current-password"
-          />
+          <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'"
+            autocomplete="current-password" />
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
@@ -60,13 +56,7 @@
 
         <div class="error-msg" *ngIf="error">{{ error }}</div>
 
-        <button
-          mat-flat-button
-          color="primary"
-          class="submit-btn"
-          type="submit"
-          [disabled]="loading || form.invalid"
-        >
+        <button mat-flat-button color="primary" class="submit-btn" type="submit" [disabled]="loading || form.invalid">
           <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
           <span *ngIf="!loading">Log In</span>
         </button>

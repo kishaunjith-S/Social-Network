@@ -3,7 +3,7 @@
     <div class="auth-bg-particles"></div>
     <div class="brand-hero">
       <mat-icon class="hero-icon">hub</mat-icon>
-      <h1>Andromeda</h1>
+      <h1>Milky Way</h1>
       <p class="hero-tagline">Join millions connecting across the universe.</p>
 
       <div class="feature-highlights">
@@ -51,7 +51,7 @@
         <div class="auth-card-header">
           <mat-icon class="card-logo">hub</mat-icon>
           <h2>Create Account</h2>
-          <p class="text-secondary">Start your journey on Andromeda</p>
+          <p class="text-secondary">Start your journey on Milky Way</p>
         </div>
 
         <form [formGroup]="accountForm" (ngSubmit)="submitStep1()">
@@ -98,7 +98,7 @@
           <div class="error-msg" *ngIf="error">{{ error }}</div>
 
           <button mat-flat-button color="primary" class="submit-btn" type="submit"
-                  [disabled]="loading || accountForm.invalid">
+            [disabled]="loading || accountForm.invalid">
             <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
             <span *ngIf="!loading">Create Account</span>
           </button>
@@ -140,7 +140,8 @@
           <form [formGroup]="profileForm" class="setup-form">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Bio</mat-label>
-              <textarea matInput formControlName="bio" rows="2" placeholder="Tell the world about yourself..."></textarea>
+              <textarea matInput formControlName="bio" rows="2"
+                placeholder="Tell the world about yourself..."></textarea>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-full">
@@ -182,8 +183,8 @@
               <div class="font-semibold">{{ user.full_name }}</div>
               <div class="text-secondary text-sm">&#64;{{ user.username }}</div>
             </div>
-            <button mat-flat-button color="primary" (click)="sendRequest(user)"
-                    [disabled]="user.friend_request_sent" class="add-btn">
+            <button mat-flat-button color="primary" (click)="sendRequest(user)" [disabled]="user.friend_request_sent"
+              class="add-btn">
               <mat-icon>{{ user.friend_request_sent ? 'check' : 'person_add' }}</mat-icon>
               {{ user.friend_request_sent ? 'Sent' : 'Add' }}
             </button>
