@@ -94,9 +94,7 @@ DATABASES = {
 }
 
 # Neo4j (neomodel)
-NEOMODEL_NEO4J_BOLT_URL = os.environ.get(
-    'NEO4J_BOLT_URL', 'bolt://neo4j:andromeda_secret@localhost:7687'
-)
+NEOMODEL_NEO4J_BOLT_URL = os.environ["NEO4J_BOLT_URL"]
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = True
 
@@ -300,3 +298,10 @@ LOGGING = {
         'celery': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
     },
 }
+
+
+
+from neomodel import config
+import os
+
+config.DATABASE_URL = os.environ["NEO4J_BOLT_URL"]
