@@ -12,7 +12,7 @@ RUN npm run build -- --configuration=production
 # ── Stage 2: Serve with Nginx ──────────────────────────────────────────────────
 FROM nginx:1.25-alpine
 
-COPY --from=builder /app/dist/andromeda/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/milkyway/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

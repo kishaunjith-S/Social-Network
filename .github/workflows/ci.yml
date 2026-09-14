@@ -29,7 +29,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Validate Django config
-        run: python manage.py check --settings=andromeda.settings_test
+        run: python manage.py check --settings=milkyway.settings_test
 
       - name: Compile Python source
         run: python -m compileall -q .

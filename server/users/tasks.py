@@ -16,8 +16,8 @@ def send_welcome_email(user_id):
         User = get_user_model()
         user = User.objects.get(id=user_id)
         send_mail(
-            subject='Welcome to Andromeda!',
-            message=f'Hi {user.first_name},\n\nWelcome to Andromeda! Start connecting with people around you.\n\nThe Andromeda Team',
+            subject='Welcome to Milky Way!',
+            message=f'Hi {user.first_name},\n\nWelcome to Milky Way! Start connecting with people around you.\n\nThe Milky Way Team',
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
             fail_silently=True,
@@ -36,7 +36,7 @@ def send_password_reset_email(user_id, reset_link):
         User = get_user_model()
         user = User.objects.get(id=user_id)
         send_mail(
-            subject='Reset your Andromeda password',
+            subject='Reset your Milky Way password',
             message=f'Hi {user.first_name},\n\nClick the link below to reset your password:\n{reset_link}\n\nIf you did not request this, ignore this email.',
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],

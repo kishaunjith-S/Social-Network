@@ -106,7 +106,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class AndromedaTokenSerializer(TokenObtainPairSerializer):
+class MilkyWayTokenSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

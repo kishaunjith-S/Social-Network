@@ -4,7 +4,7 @@ from .models import User, FriendRequest, Block
 
 
 @admin.register(User)
-class AndromedaUserAdmin(UserAdmin):
+class MilkyWayUserAdmin(UserAdmin):
     list_display = ['username', 'email', 'full_name', 'is_verified', 'friends_count', 'created_at']
     list_filter = ['is_verified', 'is_staff', 'is_active']
     fieldsets = UserAdmin.fieldsets + (

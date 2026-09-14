@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
-ROOT_URLCONF = 'andromeda.urls'
+ROOT_URLCONF = 'milkyway.urls'
 
 TEMPLATES = [
     {
@@ -75,8 +75,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'andromeda.wsgi.application'
-ASGI_APPLICATION = 'andromeda.asgi.application'
+WSGI_APPLICATION = 'milkyway.wsgi.application'
+ASGI_APPLICATION = 'milkyway.asgi.application'
 
 # ============================================================
 # Databases
@@ -84,9 +84,9 @@ ASGI_APPLICATION = 'andromeda.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django_prometheus.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'andromeda'),
-        'USER': os.environ.get('POSTGRES_USER', 'andromeda'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'andromeda_secret'),
+        'NAME': os.environ.get('POSTGRES_DB', 'milkyway'),
+        'USER': os.environ.get('POSTGRES_USER', 'milkyway'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'milkyway_secret'),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
         'OPTIONS': {'connect_timeout': 10},
@@ -110,7 +110,7 @@ CACHES = {
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         },
-        'KEY_PREFIX': 'andromeda',
+        'KEY_PREFIX': 'milkyway',
     }
 }
 
@@ -132,7 +132,7 @@ CHANNEL_LAYERS = {
 # Celery (RabbitMQ broker, Redis result backend)
 # ============================================================
 CELERY_BROKER_URL = os.environ.get(
-    'RABBITMQ_URL', 'amqp://andromeda:andromeda_secret@localhost:5672/andromeda'
+    'RABBITMQ_URL', 'amqp://milkyway:milkyway_secret@localhost:5672/milkyway'
 )
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['json']
@@ -238,9 +238,9 @@ if _MINIO_ENDPOINT:
     AWS_S3_URL_PROTOCOL = os.environ.get('AWS_S3_URL_PROTOCOL', 'http:')
     AWS_S3_USE_SSL = AWS_S3_URL_PROTOCOL == 'https:'
     AWS_S3_ADDRESSING_STYLE = 'path'
-    AWS_ACCESS_KEY_ID = os.environ.get('MINIO_ACCESS_KEY', 'andromeda')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('MINIO_SECRET_KEY', 'andromeda_secret')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('MINIO_BUCKET', 'andromeda-media')
+    AWS_ACCESS_KEY_ID = os.environ.get('MINIO_ACCESS_KEY', 'milkyway')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('MINIO_SECRET_KEY', 'milkyway_secret')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('MINIO_BUCKET', 'milkyway-media')
     AWS_S3_CUSTOM_DOMAIN = os.environ.get(
         'MINIO_EXTERNAL_URL', 'http://localhost:9000'
     ).replace('http://', '').replace('https://', '') + '/' + AWS_STORAGE_BUCKET_NAME
@@ -259,7 +259,7 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Andromeda <noreply@andromeda.social>')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Milky Way <noreply@milkyway.social>')
 
 # ============================================================
 # Internationalisation

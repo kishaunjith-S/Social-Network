@@ -1,5 +1,5 @@
 # =============================================================================
-# Andromeda – Local Development Launcher (PowerShell)
+# Milky Way – Local Development Launcher (PowerShell)
 # Starts infrastructure via Docker, then runs the Django backend, Celery
 # worker + beat, and Angular dev server in separate terminal windows.
 #
@@ -26,10 +26,10 @@ $ServerDir = Join-Path $Root "server"
 $ClientDir = Join-Path $Root "client"
 
 # ── Colours ───────────────────────────────────────────────────────────────────
-function Log  ($msg) { Write-Host "[andromeda] $msg" -ForegroundColor Cyan }
-function Ok   ($msg) { Write-Host "[andromeda] $msg" -ForegroundColor Green }
-function Warn ($msg) { Write-Host "[andromeda] $msg" -ForegroundColor Yellow }
-function Die  ($msg) { Write-Host "[andromeda] ERROR: $msg" -ForegroundColor Red; exit 1 }
+function Log  ($msg) { Write-Host "[milkyway] $msg" -ForegroundColor Cyan }
+function Ok   ($msg) { Write-Host "[milkyway] $msg" -ForegroundColor Green }
+function Warn ($msg) { Write-Host "[milkyway] $msg" -ForegroundColor Yellow }
+function Die  ($msg) { Write-Host "[milkyway] ERROR: $msg" -ForegroundColor Red; exit 1 }
 
 # ── Track processes for cleanup ───────────────────────────────────────────────
 $Jobs = @()
@@ -84,16 +84,16 @@ if (-not (Test-Path $EnvFile)) {
 # Local-dev environment variables
 $Env:DEBUG                 = "True"
 $Env:POSTGRES_HOST         = "localhost"
-$Env:POSTGRES_DB           = if ($Env:POSTGRES_DB)       { $Env:POSTGRES_DB }       else { "andromeda" }
-$Env:POSTGRES_USER         = if ($Env:POSTGRES_USER)     { $Env:POSTGRES_USER }     else { "andromeda" }
-$Env:POSTGRES_PASSWORD     = if ($Env:POSTGRES_PASSWORD) { $Env:POSTGRES_PASSWORD } else { "andromeda_secret" }
-$Neo4jPwd                  = if ($Env:NEO4J_PASSWORD)    { $Env:NEO4J_PASSWORD }    else { "andromeda_secret" }
+$Env:POSTGRES_DB           = if ($Env:POSTGRES_DB)       { $Env:POSTGRES_DB }       else { "milkyway" }
+$Env:POSTGRES_USER         = if ($Env:POSTGRES_USER)     { $Env:POSTGRES_USER }     else { "milkyway" }
+$Env:POSTGRES_PASSWORD     = if ($Env:POSTGRES_PASSWORD) { $Env:POSTGRES_PASSWORD } else { "milkyway_secret" }
+$Neo4jPwd                  = if ($Env:NEO4J_PASSWORD)    { $Env:NEO4J_PASSWORD }    else { "milkyway_secret" }
 $RedisPwd                  = if ($Env:REDIS_PASSWORD)    { $Env:REDIS_PASSWORD }    else { "redis_secret" }
-$RabbitUser                = if ($Env:RABBITMQ_USER)     { $Env:RABBITMQ_USER }     else { "andromeda" }
-$RabbitPwd                 = if ($Env:RABBITMQ_PASSWORD) { $Env:RABBITMQ_PASSWORD } else { "andromeda_secret" }
+$RabbitUser                = if ($Env:RABBITMQ_USER)     { $Env:RABBITMQ_USER }     else { "milkyway" }
+$RabbitPwd                 = if ($Env:RABBITMQ_PASSWORD) { $Env:RABBITMQ_PASSWORD } else { "milkyway_secret" }
 $Env:NEO4J_BOLT_URL        = "bolt://neo4j:$Neo4jPwd@localhost:7687"
 $Env:REDIS_URL             = "redis://:$RedisPwd@localhost:6379/0"
-$Env:RABBITMQ_URL          = "amqp://${RabbitUser}:${RabbitPwd}@localhost:5672/andromeda"
+$Env:RABBITMQ_URL          = "amqp://${RabbitUser}:${RabbitPwd}@localhost:5672/milkyway"
 $Env:SECRET_KEY            = if ($Env:SECRET_KEY) { $Env:SECRET_KEY } else { "django-insecure-local-dev-only" }
 $Env:ALLOWED_HOSTS         = "localhost,127.0.0.1"
 $Env:CORS_ALLOWED_ORIGINS  = "http://localhost:4200,http://127.0.0.1:4200"
@@ -124,7 +124,7 @@ Wait-Healthy "neo4j"     200
 
 # ── 5. Python virtual environment ─────────────────────────────────────────────
 $VenvDir = $null
-foreach ($candidate in @("Tempandromeda_venv", ".venv", "venv")) {
+foreach ($candidate in @("Tempmilkyway_venv", ".venv", "venv")) {
     $path = Join-Path $Root $candidate
     if (Test-Path $path) { $VenvDir = $path; break }
 }
@@ -179,7 +179,7 @@ function Start-Window($title, $command) {
 
 # ── 10. Django ASGI server ────────────────────────────────────────────────────
 Log "Starting Django ASGI server on http://localhost:8000 ..."
-$DjangoCmd = "cd '$ServerDir'; uvicorn andromeda.asgi:application --host 127.0.0.1 --port 8000 --reload --reload-dir '$ServerDir' --log-level info"
+$DjangoCmd = "cd '$ServerDir'; uvicorn milkyway.asgi:application --host 127.0.0.1 --port 8000 --reload --reload-dir '$ServerDir' --log-level info"
 $DjangoProc = Start-Process powershell `
     -ArgumentList "-NoExit", "-Command", $DjangoCmd `
     -WindowStyle Normal -PassThru
@@ -191,7 +191,7 @@ Start-Sleep -Seconds 2
 # ── 11. Celery worker + beat ──────────────────────────────────────────────────
 if (-not $NoCelery) {
     Log "Starting Celery worker..."
-    $WorkerCmd = "cd '$ServerDir'; celery -A andromeda worker --loglevel=info --concurrency=2 -Q notifications,messages,default"
+    $WorkerCmd = "cd '$ServerDir'; celery -A milkyway worker --loglevel=info --concurrency=2 -Q notifications,messages,default"
     $WorkerProc = Start-Process powershell `
         -ArgumentList "-NoExit", "-Command", $WorkerCmd `
         -WindowStyle Normal -PassThru
@@ -199,7 +199,7 @@ if (-not $NoCelery) {
     Ok "Celery worker started in new window (PID $($WorkerProc.Id))."
 
     Log "Starting Celery beat..."
-    $BeatCmd = "cd '$ServerDir'; celery -A andromeda beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    $BeatCmd = "cd '$ServerDir'; celery -A milkyway beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     $BeatProc = Start-Process powershell `
         -ArgumentList "-NoExit", "-Command", $BeatCmd `
         -WindowStyle Normal -PassThru
@@ -221,7 +221,7 @@ if (-not $NoClient) {
 # ── 13. Summary ───────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "╔══════════════════════════════════════════════╗" -ForegroundColor Magenta
-Write-Host "║        Andromeda is running locally          ║" -ForegroundColor Magenta
+Write-Host "║        Milky Way is running locally          ║" -ForegroundColor Magenta
 Write-Host "╠══════════════════════════════════════════════╣" -ForegroundColor Magenta
 Write-Host "║  App          →  " -NoNewline -ForegroundColor Magenta
 Write-Host "http://localhost:4200      " -NoNewline -ForegroundColor Green

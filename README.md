@@ -1,4 +1,4 @@
-# Andromeda
+# Milky Way
 
 A full-stack social networking platform with posts, chats, groups, pages, a marketplace, and a "Watch" video feed. Built as a modular Django backend with an Angular client, backed by both a relational and a graph database so the social graph and content data each live where they belong.
 
@@ -28,7 +28,7 @@ A full-stack social networking platform with posts, chats, groups, pages, a mark
 
 ```
 client/       Angular 17 application
-server/       Django project (andromeda) with per-domain apps:
+server/       Django project (milkyway) with per-domain apps:
               users, posts, chats, groups, pages,
               marketplace, notifications, watch
 monitoring/   Grafana + Prometheus configuration

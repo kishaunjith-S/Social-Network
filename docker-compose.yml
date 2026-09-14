@@ -4,30 +4,30 @@ services:
   # ============================================================
   postgres:
     image: postgres:15-alpine
-    container_name: andromeda_postgres
+    container_name: milkyway_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-andromeda}
-      POSTGRES_USER: ${POSTGRES_USER:-andromeda}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-andromeda_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-milkyway}
+      POSTGRES_USER: ${POSTGRES_USER:-milkyway}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-milkyway_secret}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - andromeda_network
+      - milkyway_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-andromeda}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-milkyway}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   neo4j:
     image: neo4j:5-community
-    container_name: andromeda_neo4j
+    container_name: milkyway_neo4j
     restart: unless-stopped
     environment:
-      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-andromeda_secret}
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-milkyway_secret}
       NEO4J_PLUGINS: '["apoc"]'
       NEO4J_dbms_security_procedures_unrestricted: apoc.*
       NEO4J_dbms_security_procedures_allowlist: apoc.*
@@ -40,7 +40,7 @@ services:
       - "7474:7474"
       - "7687:7687"
     networks:
-      - andromeda_network
+      - milkyway_network
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
       interval: 30s
@@ -50,7 +50,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: andromeda_redis
+    container_name: milkyway_redis
     restart: unless-stopped
     command: redis-server --requirepass ${REDIS_PASSWORD:-redis_secret} --appendonly yes
     volumes:
@@ -58,7 +58,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - andromeda_network
+      - milkyway_network
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret}", "ping"]
       interval: 10s
@@ -67,19 +67,19 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: andromeda_rabbitmq
+    container_name: milkyway_rabbitmq
     restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-andromeda}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-andromeda_secret}
-      RABBITMQ_DEFAULT_VHOST: andromeda
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-milkyway}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-milkyway_secret}
+      RABBITMQ_DEFAULT_VHOST: milkyway
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
     networks:
-      - andromeda_network
+      - milkyway_network
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 30s
@@ -89,19 +89,19 @@ services:
 
   minio:
     image: minio/minio
-    container_name: andromeda_minio
+    container_name: milkyway_minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-andromeda}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-andromeda_secret}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-milkyway}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-milkyway_secret}
     volumes:
       - minio_data:/data
     ports:
       - "9000:9000"
       - "9001:9001"
     networks:
-      - andromeda_network
+      - milkyway_network
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 10s
@@ -110,19 +110,19 @@ services:
 
   createbuckets:
     image: minio/mc
-    container_name: andromeda_createbuckets
+    container_name: milkyway_createbuckets
     depends_on:
       minio:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      mc alias set myminio http://minio:9000 $${MINIO_ROOT_USER:-andromeda} $${MINIO_ROOT_PASSWORD:-andromeda_secret};
-      mc mb --ignore-existing myminio/andromeda-media;
-      mc anonymous set download myminio/andromeda-media;
+      mc alias set myminio http://minio:9000 $${MINIO_ROOT_USER:-milkyway} $${MINIO_ROOT_PASSWORD:-milkyway_secret};
+      mc mb --ignore-existing myminio/milkyway-media;
+      mc anonymous set download myminio/milkyway-media;
       exit 0;
       "
     networks:
-      - andromeda_network
+      - milkyway_network
 
   # ============================================================
   # Application Services
@@ -131,24 +131,24 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: andromeda_django
+    container_name: milkyway_django
     restart: unless-stopped
     command: >
       sh -c "python manage.py makemigrations --noinput &&
              python manage.py migrate --fake-initial --noinput &&
              python manage.py collectstatic --noinput &&
-             uvicorn andromeda.asgi:application --host 0.0.0.0 --port 8000 --workers 4 --ws websockets"
+             uvicorn milkyway.asgi:application --host 0.0.0.0 --port 8000 --workers 4 --ws websockets"
     env_file:
       - .env
     environment:
       - POSTGRES_HOST=postgres
-      - NEO4J_BOLT_URL=bolt://neo4j:${NEO4J_PASSWORD:-andromeda_secret}@neo4j:7687
+      - NEO4J_BOLT_URL=bolt://neo4j:${NEO4J_PASSWORD:-milkyway_secret}@neo4j:7687
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secret}@redis:6379/0
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-andromeda}:${RABBITMQ_PASSWORD:-andromeda_secret}@rabbitmq:5672/andromeda
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-milkyway}:${RABBITMQ_PASSWORD:-milkyway_secret}@rabbitmq:5672/milkyway
       - MINIO_ENDPOINT=http://minio:9000
-      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER:-andromeda}
-      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD:-andromeda_secret}
-      - MINIO_BUCKET=andromeda-media
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER:-milkyway}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD:-milkyway_secret}
+      - MINIO_BUCKET=milkyway-media
       - MINIO_EXTERNAL_URL=http://localhost:9000
     volumes:
       - media_data:/app/media
@@ -156,7 +156,7 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       postgres:
         condition: service_healthy
@@ -173,20 +173,20 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: andromeda_celery_worker
+    container_name: milkyway_celery_worker
     restart: unless-stopped
-    command: celery -A andromeda worker --loglevel=info --concurrency=4 -Q notifications,messages,default
+    command: celery -A milkyway worker --loglevel=info --concurrency=4 -Q notifications,messages,default
     env_file:
       - .env
     environment:
       - POSTGRES_HOST=postgres
-      - NEO4J_BOLT_URL=bolt://neo4j:${NEO4J_PASSWORD:-andromeda_secret}@neo4j:7687
+      - NEO4J_BOLT_URL=bolt://neo4j:${NEO4J_PASSWORD:-milkyway_secret}@neo4j:7687
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secret}@redis:6379/0
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-andromeda}:${RABBITMQ_PASSWORD:-andromeda_secret}@rabbitmq:5672/andromeda
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-milkyway}:${RABBITMQ_PASSWORD:-milkyway_secret}@rabbitmq:5672/milkyway
     volumes:
       - media_data:/app/media
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       - django
     healthcheck:
@@ -200,17 +200,17 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: andromeda_celery_beat
+    container_name: milkyway_celery_beat
     restart: unless-stopped
-    command: celery -A andromeda beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A milkyway beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     env_file:
       - .env
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secret}@redis:6379/0
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-andromeda}:${RABBITMQ_PASSWORD:-andromeda_secret}@rabbitmq:5672/andromeda
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-milkyway}:${RABBITMQ_PASSWORD:-milkyway_secret}@rabbitmq:5672/milkyway
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       - django
     healthcheck:
@@ -224,17 +224,17 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: andromeda_flower
+    container_name: milkyway_flower
     restart: unless-stopped
-    command: celery -A andromeda flower --port=5555 --broker=amqp://${RABBITMQ_USER:-andromeda}:${RABBITMQ_PASSWORD:-andromeda_secret}@rabbitmq:5672/andromeda
+    command: celery -A milkyway flower --port=5555 --broker=amqp://${RABBITMQ_USER:-milkyway}:${RABBITMQ_PASSWORD:-milkyway_secret}@rabbitmq:5672/milkyway
     env_file:
       - .env
     environment:
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-andromeda}:${RABBITMQ_PASSWORD:-andromeda_secret}@rabbitmq:5672/andromeda
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-milkyway}:${RABBITMQ_PASSWORD:-milkyway_secret}@rabbitmq:5672/milkyway
     ports:
       - "5555:5555"
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       - rabbitmq
       - celery_worker
@@ -252,14 +252,14 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: andromeda_client
+    container_name: milkyway_client
     restart: unless-stopped
     ports:
       - "4200:80"
     volumes:
       - media_data:/app/media:ro
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       - django
 
@@ -268,7 +268,7 @@ services:
   # ============================================================
   redis_exporter:
     image: oliver006/redis_exporter:latest
-    container_name: andromeda_redis_exporter
+    container_name: milkyway_redis_exporter
     restart: unless-stopped
     environment:
       REDIS_ADDR: redis://redis:6379
@@ -276,20 +276,20 @@ services:
     ports:
       - "9121:9121"
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       - redis
 
   postgres_exporter:
     image: prometheuscommunity/postgres-exporter:latest
-    container_name: andromeda_postgres_exporter
+    container_name: milkyway_postgres_exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-andromeda}:${POSTGRES_PASSWORD:-andromeda_secret}@postgres:5432/${POSTGRES_DB:-andromeda}?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-milkyway}:${POSTGRES_PASSWORD:-milkyway_secret}@postgres:5432/${POSTGRES_DB:-milkyway}?sslmode=disable"
     ports:
       - "9187:9187"
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       postgres:
         condition: service_healthy
@@ -299,7 +299,7 @@ services:
   # ============================================================
   prometheus:
     image: prom/prometheus:latest
-    container_name: andromeda_prometheus
+    container_name: milkyway_prometheus
     restart: unless-stopped
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -314,11 +314,11 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - andromeda_network
+      - milkyway_network
 
   grafana:
     image: grafana/grafana:latest
-    container_name: andromeda_grafana
+    container_name: milkyway_grafana
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
@@ -333,14 +333,14 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - andromeda_network
+      - milkyway_network
     depends_on:
       - prometheus
 
 networks:
-  andromeda_network:
+  milkyway_network:
     driver: bridge
-    name: andromeda_network
+    name: milkyway_network
 
 volumes:
   postgres_data:

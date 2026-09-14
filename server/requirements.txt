@@ -1,5 +1,5 @@
 # ============================================================
-# Andromeda – Django Backend Requirements
+# Milky Way – Django Backend Requirements
 # ============================================================
 
 # Core Framework
