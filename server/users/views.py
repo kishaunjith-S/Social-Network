@@ -12,7 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import FriendRequest, Block
 from .serializers import (
     UserSerializer, RegisterSerializer,
-    AndromedaTokenSerializer, FriendRequestSerializer,
+    MilkyWayTokenSerializer, FriendRequestSerializer,
 )
 
 User = get_user_model()
@@ -37,7 +37,7 @@ class RegisterView(generics.CreateAPIView):
 
 
 class LoginView(TokenObtainPairView):
-    serializer_class = AndromedaTokenSerializer
+    serializer_class = MilkyWayTokenSerializer
     permission_classes = [permissions.AllowAny]
 
 

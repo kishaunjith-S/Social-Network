@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "andromeda": {
+    "milkyway": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/andromeda",
+            "outputPath": "dist/milkyway",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -52,8 +52,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": { "buildTarget": "andromeda:build:production" },
-            "development": { "buildTarget": "andromeda:build:development" }
+            "production": { "buildTarget": "milkyway:build:production" },
+            "development": { "buildTarget": "milkyway:build:development" }
           },
           "defaultConfiguration": "development"
         },

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Andromeda – Local Development Launcher
+# Milky Way – Local Development Launcher
 # Starts infrastructure via Docker, then runs the Django backend, Celery
 # worker + beat, and Angular dev server as native processes.
 #
@@ -18,10 +18,10 @@ CLIENT_DIR="$ROOT/client"
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
-log()    { echo -e "${CYAN}[andromeda]${NC} $*"; }
-ok()     { echo -e "${GREEN}[andromeda]${NC} $*"; }
-warn()   { echo -e "${YELLOW}[andromeda]${NC} $*"; }
-die()    { echo -e "${RED}[andromeda] ERROR:${NC} $*" >&2; exit 1; }
+log()    { echo -e "${CYAN}[milkyway]${NC} $*"; }
+ok()     { echo -e "${GREEN}[milkyway]${NC} $*"; }
+warn()   { echo -e "${YELLOW}[milkyway]${NC} $*"; }
+die()    { echo -e "${RED}[milkyway] ERROR:${NC} $*" >&2; exit 1; }
 
 # ── Flags ────────────────────────────────────────────────────────────────────
 RUN_CLIENT=true
@@ -81,12 +81,12 @@ fi
 # Local-dev env overrides (services running on localhost, not Docker hostnames)
 export DEBUG=True
 export POSTGRES_HOST=localhost
-export POSTGRES_DB="${POSTGRES_DB:-andromeda}"
-export POSTGRES_USER="${POSTGRES_USER:-andromeda}"
-export POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-andromeda_secret}"
-export NEO4J_BOLT_URL="bolt://neo4j:${NEO4J_PASSWORD:-andromeda_secret}@localhost:7687"
+export POSTGRES_DB="${POSTGRES_DB:-milkyway}"
+export POSTGRES_USER="${POSTGRES_USER:-milkyway}"
+export POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-milkyway_secret}"
+export NEO4J_BOLT_URL="bolt://neo4j:${NEO4J_PASSWORD:-milkyway_secret}@localhost:7687"
 export REDIS_URL="redis://:${REDIS_PASSWORD:-redis_secret}@localhost:6379/0"
-export RABBITMQ_URL="amqp://${RABBITMQ_USER:-andromeda}:${RABBITMQ_PASSWORD:-andromeda_secret}@localhost:5672/andromeda"
+export RABBITMQ_URL="amqp://${RABBITMQ_USER:-milkyway}:${RABBITMQ_PASSWORD:-milkyway_secret}@localhost:5672/milkyway"
 export SECRET_KEY="${SECRET_KEY:-django-insecure-local-dev-only}"
 export ALLOWED_HOSTS="localhost,127.0.0.1"
 export CORS_ALLOWED_ORIGINS="http://localhost:4200,http://127.0.0.1:4200"
@@ -118,9 +118,9 @@ wait_healthy rabbitmq 90
 wait_healthy neo4j    180
 
 # ── 5. Python virtual environment ────────────────────────────────────────────
-# Prefer existing Tempandromeda_venv, otherwise use .venv
-if [[ -d "$ROOT/Tempandromeda_venv" ]]; then
-  VENV_DIR="$ROOT/Tempandromeda_venv"
+# Prefer existing Tempmilkyway_venv, otherwise use .venv
+if [[ -d "$ROOT/Tempmilkyway_venv" ]]; then
+  VENV_DIR="$ROOT/Tempmilkyway_venv"
 elif [[ -d "$ROOT/.venv" ]]; then
   VENV_DIR="$ROOT/.venv"
 else
@@ -169,7 +169,7 @@ ok "Migrations applied."
 
 # ── 10. Django dev server (uvicorn ASGI) ──────────────────────────────────────
 log "Starting Django ASGI server on http://localhost:8000 ..."
-uvicorn andromeda.asgi:application \
+uvicorn milkyway.asgi:application \
   --host 127.0.0.1 \
   --port 8000 \
   --reload \
@@ -181,7 +181,7 @@ ok "Django running (PID ${PIDS[-1]})."
 # ── 11. Celery worker + beat ──────────────────────────────────────────────────
 if $RUN_CELERY; then
   log "Starting Celery worker..."
-  celery -A andromeda worker \
+  celery -A milkyway worker \
     --loglevel=info \
     --concurrency=2 \
     -Q notifications,messages,default \
@@ -190,7 +190,7 @@ if $RUN_CELERY; then
   ok "Celery worker running (PID ${PIDS[-1]}). Logs → celery-worker.log"
 
   log "Starting Celery beat..."
-  celery -A andromeda beat \
+  celery -A milkyway beat \
     --loglevel=info \
     --scheduler django_celery_beat.schedulers:DatabaseScheduler \
     --logfile="$ROOT/celery-beat.log" &
@@ -210,7 +210,7 @@ fi
 # ── 13. Summary ───────────────────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║        Andromeda is running locally          ║${NC}"
+echo -e "${BOLD}║        Milky Way is running locally          ║${NC}"
 echo -e "${BOLD}╠══════════════════════════════════════════════╣${NC}"
 echo -e "${BOLD}║${NC}  App          →  ${GREEN}http://localhost:4200${NC}       ${BOLD}║${NC}"
 echo -e "${BOLD}║${NC}  API          →  ${GREEN}http://localhost:8000/api${NC}   ${BOLD}║${NC}"

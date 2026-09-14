@@ -1,5 +1,5 @@
 """
-Neo4j graph models for Andromeda's social graph.
+Neo4j graph models for Milky Way's social graph.
 These mirror the relational User model and power
 friend recommendations, feed ranking, and graph queries.
 """

@@ -4,7 +4,7 @@ from django.db.models import Q
 
 
 class User(AbstractUser):
-    """Extended user model for Andromeda."""
+    """Extended user model for Milky Way."""
 
     # Override AbstractUser.email to enforce uniqueness across all accounts
     email = models.EmailField(unique=True, blank=False)
